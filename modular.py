@@ -56,7 +56,8 @@ class Module():
         self.rev = rev
 
         if not os.path.isdir(self.directory): # TODO is this redundant considering the try?
-            print("cloning")
+            print("cloning {url} to {directory}".format(url=self.url,
+                directory=self.directory))
             git.Repo.clone_from(url, directory)
             self.repo = git.Git(self.directory)
             self.repo.checkout(rev)
@@ -72,6 +73,8 @@ class Module():
 
     def update(self):
         try:
+            print("pulling updates from {url} to "
+                    "{directory}".format(url=self.url, directory=self.directory))
             self.repo.pull('--ff-only')
         except git.exc.GitCommandError as exception_message:
             print("for: {directory} \n"
