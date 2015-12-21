@@ -1,67 +1,86 @@
+ #!/usr/bin/env python3
+
+"""
+update modes by priority
+- git - fetches and see's if it's up to date
+- curl - version does some sort of checksum to see if it's the same as the
+  stored one
+- wget - like curl?
+- mecurial - like git?
+- svn ??
+
+look here for curl timestamp: http://blog.yjl.im/2012/03/downloading-only-when-modified-using.html
+os.stat()
+
+module
+check to see if all the modules, or list of modules exits
+
+module update
+update all modules that are out of date
+check that this can be done cleanly
+
+module clean
+if files haven't been changed, removes modules
+--force
+"""
+
 import argparse
 
 import git
 import os
 
+import util
 
-def module(url, directory):
-    if os.path.isdir(directory):
-        try:
-            test2 = git.repo.base.Repo(directory)
-        except git.exc.InvalidGitRepositoryError:
-            print("can't clone repo at {directory} since it already exists").format(directory=directory)
-    else:
-        print("cloning")
-        git.Repo.clone_from(url, directory)
-        # print "I need to sync"
-        # subprocess.call(["git", "clone", "--recursive",  url, loc])
-        # subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
+parser = argparse.ArgumentParser(description='setup dotfiles')
+parser.add_argument(
+        "--file",
+        default="./modules.py",
+        help="path of the module file")
 
-# if 0:
-#     # update
-#     for repo in repos
-#         if can be updated cleanly:
-#             git pull
-#         else
-#           # error: can not be cleanly updated push changes?
-#
-#   # remove
+args = parser.parse_args()
+# ============================================================================
+
+modules = util.dynamic_import(args.file, "")
 
 def main():
-    """
-    update modes by priority
-    - git - fetches and see's if it's up to date
-    - curl - version does some sort of checksum to see if it's the same as the
-      stored one
-    - wget - like curl?
-    - mecurial - like git?
-    - svn ??
+    for module in modules.MODULES:
+        Module(
+            module["url"],
+            util.resolve_path_absolute(module["directory"]),
+            module["rev"]).update()
 
-    look here for curl timestamp: http://blog.yjl.im/2012/03/downloading-only-when-modified-using.html
-    os.stat()
+class Module():
+    def __init__(self, url, directory, rev='master'):
+        self.url = url
+        self.directory = directory
+        self.rev = rev
 
-    module
-    check to see if all the modules, or list of modules exits
+        if not os.path.isdir(self.directory): # TODO is this redundant considering the try?
+            print("cloning")
+            git.Repo.clone_from(url, directory)
+            self.repo = git.Git(self.directory)
+            self.repo.checkout(rev)
+            # print "I need to sync"
+            # subprocess.call(["git", "clone", "--recursive",  url, loc])
+            # subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
 
-    module update
-    update all modules that are out of date
-    check that this can be done cleanly
+        try:
+            self.repo = git.Git(self.directory)
+        except git.exc.InvalidGitRepositoryError:
+            print("{directory} already exits and is not a git "
+                    "repo".format(directory=self.directory))
 
-    module clean
-    if files haven't been changed, removes modules
-    --force
-    """
-    url = "https://github.com/dcestari/git-external.git"
-    location1 = os.path.join(os.path.expanduser("~"), "test1")
-    location2 = os.path.join(os.path.expanduser("~"), "test2")
-    location3 = os.path.join(os.path.expanduser("~"), "test3")
-
-    module(url=url, location=location1)
-    module(url=url, location=location2)
-    module(url=url, location=location3)
-
-
-
+    def update(self):
+        try:
+            self.repo.pull('--ff-only')
+        except git.exc.GitCommandError as exception_message:
+            print("for: {directory} \n"
+                    "{exception_message}".format(
+                        directory=self.directory,
+                        exception_message=exception_message)
+            )
+        else:
+            self.repo.checkout(self.rev)
 
 
 # does git repository match
