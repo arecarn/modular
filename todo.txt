@@ -1,10 +1,11 @@
-(A) 2015-12-21 clean up git commit log +general
-(A) 2015-12-21 add update sub command +general
+(A) 2015-12-21 clean up git commit log
+(A) 2015-12-21 add update sub command
 (A) 2015-12-21 move util.py into a submodule
-(A) 2015-12-21 add clean sub command +general
-(C) 2015-12-21 make Modules() class abstract class +general
-(B) 2015-12-21 support pulling of submodules +git
-(D) 2015-12-21 add support for +curl
-(D) 2015-12-21 add support for +wget
-(D) 2015-12-21 add support for +mecurial
-(D) 2015-12-21 add support for +subversion
+(A) 2015-12-21 add clean sub command
+(B) 2015-12-21 support pulling/cloning of git submodules
+(C) 2015-12-21 make Modules() class abstract class
+(C) 2015-12-21 add post update command hook
+(D) 2015-12-21 add support for curl
+(D) 2015-12-21 add support for wget
+(D) 2015-12-21 add support for mecurial
+(D) 2015-12-21 add support for subversion
