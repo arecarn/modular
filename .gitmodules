@@ -1,3 +1,4 @@
 [submodule "util.py"]
 	path = util
 	url = http://github.com/arecarn/util.py.git
+	branch = master
