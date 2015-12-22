@@ -2,6 +2,8 @@
 (A) 2015-12-21 add update sub command
 (A) 2015-12-21 move util.py into a submodule
 (A) 2015-12-21 add clean sub command
+(A) 2015-12-22 add check to see if we need to pull at all of  git fetch; git rev-list HEAD...origin/master --count to see if we need an update also see http://stackoverflow.com/questions/3258243/check-if-pull-needed-in-git
+(A) 2015-12-22 list commits that came in
 (B) 2015-12-21 support pulling/cloning of git submodules
 (C) 2015-12-21 make Modules() class abstract class
 (C) 2015-12-21 add post update command hook
