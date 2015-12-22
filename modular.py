@@ -54,16 +54,14 @@ class Module():
         self.url = url
         self.directory = directory
         self.rev = rev
+        self.repo = git.Git(self.directory)
 
         if not os.path.isdir(self.directory): # TODO is this redundant considering the try?
             print("cloning {url} to {directory}".format(url=self.url,
                 directory=self.directory))
-            git.Repo.clone_from(url, directory)
-            self.repo = git.Git(self.directory)
-            self.repo.checkout(rev)
-            # print "I need to sync"
-            # subprocess.call(["git", "clone", "--recursive",  url, loc])
-            # subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
+            self.repo.clone_from(self.url, self.directory, "--recursive")
+            self.repo.submodule("update", "--init", "--recursive")
+            self.repo.checkout(self.rev)
 
         try:
             self.repo = git.Git(self.directory)
@@ -75,7 +73,8 @@ class Module():
         try:
             print("pulling updates from {url} to "
                     "{directory}".format(url=self.url, directory=self.directory))
-            self.repo.pull('--ff-only')
+            self.repo.pull("--ff", "--ff-only")
+            self.repo.submodule("update", "--init", "--recursive")
         except git.exc.GitCommandError as exception_message:
             print("for: {directory} \n"
                     "{exception_message}".format(
