@@ -70,11 +70,13 @@ class Module():
                     "repo".format(directory=self.directory))
 
     def update(self):
+        self.repo.fetch()
         try:
-            print("pulling updates from {url} to "
-                    "{directory}".format(url=self.url, directory=self.directory))
-            self.repo.pull("--ff", "--ff-only")
-            self.repo.submodule("update", "--init", "--recursive")
+            if int(self.repo.rev_list("HEAD...@{u}", "--count")):
+                print("pulling updates from {url} to "
+                        "{directory}".format(url=self.url, directory=self.directory))
+                self.repo.pull("--ff", "--ff-only")
+                self.repo.submodule("update", "--init", "--recursive")
         except git.exc.GitCommandError as exception_message:
             print("for: {directory} \n"
                     "{exception_message}".format(
